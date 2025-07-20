@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenoTrack - Sistema de Validação Genômica e Fenotípica</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1>GenoTrack</h1>
+                <p>Sistema de Validação de Dados Genômicos e Fenotípicos</p>
+            </div>
+            <div class="user-info">
+                <span>Pesquisadora: Ana Silva</span>
+                <button class="btn-logout">Sair</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- Navigation Tabs -->
+            <nav class="tabs">
+                <button class="tab-btn active" data-tab="register">
+                    Registro de Paciente
+                </button>
+                <button class="tab-btn" data-tab="search">
+                    Consulta
+                </button>
+                <button class="tab-btn" data-tab="associations">
+                    Associações Gene-Fenótipo
+                </button>
+            </nav>
+
+            <!-- Register Patient Tab -->
+            <section id="register-tab" class="tab-content active">
+                <div class="card">
+                    <h2>Registro de Paciente</h2>
+
+                    <form id="patient-form" class="form">
+                        <div class="form-section">
+                            <h3>Dados do Paciente</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="patient-id">ID do Paciente *</label>
+                                    <input type="text" id="patient-id" name="patient_id"
+                                           placeholder="BR-PACIENTE-0321" pattern="BR-PACIENTE-\d{4}" required>
+                                    <small>Formato: BR-PACIENTE-XXXX</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="patient-name">Nome Completo *</label>
+                                    <input type="text" id="patient-name" name="name" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="birth-date">Data de Nascimento *</label>
+                                    <input type="date" id="birth-date" name="birth_date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gender">Gênero *</label>
+                                    <select id="gender" name="gender" required>
+                                        <option value="">Selecione</option>
+                                        <option value="F">Feminino</option>
+                                        <option value="M">Masculino</option>
+                                        <option value="O">Outro</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Dados Genômicos</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="gene-symbol">Gene *</label>
+                                    <select id="gene-symbol" name="gene_symbol" required>
+                                        <option value="">Selecione o gene</option>
+                                        <option value="LDLR">LDLR - Receptor de LDL</option>
+                                        <option value="APOB">APOB - Apolipoproteína B</option>
+                                        <option value="PCSK9">PCSK9 - Pró-proteína convertase</option>
+                                        <option value="BRCA1">BRCA1 - Câncer de mama 1</option>
+                                        <option value="BRCA2">BRCA2 - Câncer de mama 2</option>
+                                        <option value="CFTR">CFTR - Fibrose cística</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="chromosome">Cromossomo *</label>
+                                    <input type="text" id="chromosome" name="chromosome"
+                                           placeholder="19" pattern="(chr)?(1[0-9]|2[0-2]|[1-9]|X|Y|MT)" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="position">Posição *</label>
+                                    <input type="number" id="position" name="position"
+                                           placeholder="11200138" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="variant-type">Tipo de Variante *</label>
+                                    <select id="variant-type" name="variant_type" required>
+                                        <option value="">Selecione</option>
+                                        <option value="SNV">SNV - Variante de nucleotídeo único</option>
+                                        <option value="INDEL">INDEL - Inserção/Deleção</option>
+                                        <option value="CNV">CNV - Variação do número de cópias</option>
+                                        <option value="SV">SV - Variante estrutural</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="reference-allele">Alelo de Referência *</label>
+                                    <input type="text" id="reference-allele" name="reference_allele"
+                                           placeholder="C" pattern="[ATCG]+" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="alternate-allele">Alelo Alternativo *</label>
+                                    <input type="text" id="alternate-allele" name="alternate_allele"
+                                           placeholder="T" pattern="[ATCG]+" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="pathogenicity">Patogenicidade *</label>
+                                    <select id="pathogenicity" name="pathogenicity" required>
+                                        <option value="">Selecione</option>
+                                        <option value="pathogenic">Patogênica</option>
+                                        <option value="likely_pathogenic">Provavelmente patogênica</option>
+                                        <option value="uncertain">Significado incerto</option>
+                                        <option value="likely_benign">Provavelmente benigna</option>
+                                        <option value="benign">Benigna</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Dados Fenotípicos</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="hpo-code">Código HPO *</label>
+                                    <select id="hpo-code" name="hpo_code" required>
+                                        <option value="">Selecione o fenótipo</option>
+                                        <option value="HP:0003124">HP:0003124 - Hipercolesterolemia</option>
+                                        <option value="HP:0001677">HP:0001677 - Defeito do septo coronário</option>
+                                        <option value="HP:0000822">HP:0000822 - Hipertensão</option>
+                                        <option value="HP:0002664">HP:0002664 - Neoplasia</option>
+                                        <option value="HP:0001250">HP:0001250 - Convulsões</option>
+                                        <option value="HP:0001263">HP:0001263 - Atraso no desenvolvimento global</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="severity">Severidade *</label>
+                                    <select id="severity" name="severity" required>
+                                        <option value="">Selecione</option>
+                                        <option value="mild">Leve</option>
+                                        <option value="moderate">Moderada</option>
+                                        <option value="severe">Severa</option>
+                                        <option value="profound">Profunda</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="age-of-onset">Idade de Início</label>
+                                    <select id="age-of-onset" name="age_of_onset">
+                                        <option value="">Selecione</option>
+                                        <option value="congenital">Congênito</option>
+                                        <option value="neonatal">Neonatal</option>
+                                        <option value="infantile">Infantil</option>
+                                        <option value="childhood">Infância</option>
+                                        <option value="juvenile">Juvenil</option>
+                                        <option value="adult">Adulto</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group full-width">
+                                    <label for="phenotype-description">Descrição do Fenótipo *</label>
+                                    <textarea id="phenotype-description" name="description"
+                                              placeholder="Descreva as características fenotípicas observadas..."
+                                              rows="3" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="clear-form">
+                                Limpar
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                Registrar Paciente
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Search Tab -->
+            <section id="search-tab" class="tab-content">
+                <div class="card">
+                    <h2>Consulta de Pacientes</h2>
+
+                    <div class="search-filters">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="search-patient-id">ID do Paciente</label>
+                                <input type="text" id="search-patient-id" placeholder="BR-PACIENTE-0321">
+                            </div>
+                            <div class="form-group">
+                                <label for="search-gene">Gene</label>
+                                <select id="search-gene">
+                                    <option value="">Todos os genes</option>
+                                    <option value="LDLR">LDLR</option>
+                                    <option value="BRCA1">BRCA1</option>
+                                    <option value="BRCA2">BRCA2</option>
+                                    <option value="CFTR">CFTR</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="search-hpo">Código HPO</label>
+                                <select id="search-hpo">
+                                    <option value="">Todos os fenótipos</option>
+                                    <option value="HP:0003124">HP:0003124 - Hipercolesterolemia</option>
+                                    <option value="HP:0001677">HP:0001677 - Defeito do septo coronário</option>
+                                    <option value="HP:0000822">HP:0000822 - Hipertensão</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" id="search-btn">
+                                    Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="search-results" class="search-results">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Associations Tab -->
+            <section id="associations-tab" class="tab-content">
+                <div class="card">
+                    <h2>Associações Gene-Fenótipo</h2>
+
+                    <div id="associations-container" class="associations-container">
+                        <!-- Associations will be populated here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal for editing phenotypes -->
+    <div id="edit-phenotype-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Fenótipo</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-phenotype-form">
+                    <input type="hidden" id="edit-phenotype-id">
+                    <input type="hidden" id="edit-patient-id">
+
+                    <div class="form-group">
+                        <label for="edit-hpo-code">Código HPO</label>
+                        <select id="edit-hpo-code" name="hpo_code" required>
+                            <option value="HP:0003124">HP:0003124 - Hipercolesterolemia</option>
+                            <option value="HP:0001677">HP:0001677 - Defeito do septo coronário</option>
+                            <option value="HP:0000822">HP:0000822 - Hipertensão</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-severity">Severidade</label>
+                        <select id="edit-severity" name="severity" required>
+                            <option value="mild">Leve</option>
+                            <option value="moderate">Moderada</option>
+                            <option value="severe">Severa</option>
+                            <option value="profound">Profunda</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-description">Descrição</label>
+                        <textarea id="edit-description" name="description" rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="save-phenotype">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p>Processando...</p>
+    </div>
+
+    <!-- Notification area -->
+    <div id="notifications" class="notifications"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,365 @@
+{
+  "info": {
+    "name": "GenoTrack API Tests",
+    "description": "Coleção completa de testes para API GenoTrack - Sistema de Validação de Dados Genômicos e Fenotípicos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "patient_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "phenotype_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Patients API",
+      "item": [
+        {
+          "name": "Create Patient BR-PACIENTE-0321",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has patient data', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('patient_id', 'BR-PACIENTE-0321');",
+                  "    pm.expect(responseJson).to.have.property('name');",
+                  "    pm.expect(responseJson).to.have.property('birth_date');",
+                  "    pm.expect(responseJson).to.have.property('gender');",
+                  "});",
+                  "",
+                  "pm.test('Patient ID format is valid', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.patient_id).to.match(/^BR-PACIENTE-\\d{4}$/);",
+                  "});",
+                  "",
+                  "// Store patient ID for subsequent tests",
+                  "if (pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.collectionVariables.set('patient_id', responseJson.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient\": {\n    \"patient_id\": \"BR-PACIENTE-0321\",\n    \"name\": \"Ana Silva\",\n    \"birth_date\": \"1978-05-15\",\n    \"gender\": \"F\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/patients",
+              "host": ["{{base_url}}"],
+              "path": ["patients"]
+            }
+          }
+        },
+        {
+          "name": "Test Invalid Patient ID Format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 422', function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});",
+                  "",
+                  "pm.test('Error message contains format validation', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('errors');",
+                  "    pm.expect(responseJson.errors).to.be.an('array');",
+                  "    const errorMessage = responseJson.errors.join(' ');",
+                  "    pm.expect(errorMessage).to.include('formato BR-PACIENTE-XXXX');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient\": {\n    \"patient_id\": \"INVALID-FORMAT\",\n    \"name\": \"Teste Inválido\",\n    \"birth_date\": \"1980-01-01\",\n    \"gender\": \"M\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/patients",
+              "host": ["{{base_url}}"],
+              "path": ["patients"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Genomes API",
+      "item": [
+        {
+          "name": "Create LDLR Genome for Patient",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Genome data is correct', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('gene_symbol', 'LDLR');",
+                  "    pm.expect(responseJson).to.have.property('chromosome', '19');",
+                  "    pm.expect(responseJson).to.have.property('pathogenicity', 'pathogenic');",
+                  "    pm.expect(responseJson).to.have.property('is_pathogenic', true);",
+                  "});",
+                  "",
+                  "pm.test('Variant description is formatted correctly', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.variant_description).to.match(/^LDLR:[ATCG]+>[ATCG]+\\s\\(\\w+\\)$/);",
+                  "});",
+                  "",
+                  "pm.test('Genomic coordinates are valid', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.genomic_coordinates).to.match(/^19:\\d+$/);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"genome\": {\n    \"gene_symbol\": \"LDLR\",\n    \"chromosome\": \"19\",\n    \"position\": 11200138,\n    \"reference_allele\": \"C\",\n    \"alternate_allele\": \"T\",\n    \"variant_type\": \"SNV\",\n    \"pathogenicity\": \"pathogenic\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/patients/{{patient_id}}/genome",
+              "host": ["{{base_url}}"],
+              "path": ["patients", "{{patient_id}}", "genome"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Phenotypes API",
+      "item": [
+        {
+          "name": "Create HP:0003124 Phenotype",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('HPO code is valid', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('hpo_code', 'HP:0003124');",
+                  "    pm.expect(responseJson.hpo_code).to.match(/^HP:\\d{7}$/);",
+                  "});",
+                  "",
+                  "pm.test('HPO term name is correct', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('hpo_term_name', 'Hipercolesterolemia');",
+                  "});",
+                  "",
+                  "pm.test('Full description is formatted', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.full_description).to.include('HP:0003124');",
+                  "    pm.expect(responseJson.full_description).to.include('Hipercolesterolemia');",
+                  "});",
+                  "",
+                  "// Store phenotype ID for subsequent tests",
+                  "if (pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.collectionVariables.set('phenotype_id', responseJson.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phenotype\": {\n    \"hpo_code\": \"HP:0003124\",\n    \"description\": \"Paciente apresenta hipercolesterolemia familiar hereditária com níveis elevados de LDL\",\n    \"severity\": \"moderate\",\n    \"age_of_onset\": \"adult\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/patients/{{patient_id}}/phenotypes",
+              "host": ["{{base_url}}"],
+              "path": ["patients", "{{patient_id}}", "phenotypes"]
+            }
+          }
+        },
+        {
+          "name": "Test Invalid HPO Code",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 422', function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});",
+                  "",
+                  "pm.test('Error message contains HPO validation', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('errors');",
+                  "    const errorMessage = responseJson.errors.join(' ');",
+                  "    pm.expect(errorMessage).to.include('HP:0000000');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phenotype\": {\n    \"hpo_code\": \"HP:XYZ\",\n    \"description\": \"Teste com código HPO inválido\",\n    \"severity\": \"mild\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/patients/{{patient_id}}/phenotypes",
+              "host": ["{{base_url}}"],
+              "path": ["patients", "{{patient_id}}", "phenotypes"]
+            }
+          }
+        },
+        {
+          "name": "Update Phenotype to HP:0003124",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Phenotype updated successfully', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('severity', 'severe');",
+                  "    pm.expect(responseJson).to.have.property('is_severe', true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phenotype\": {\n    \"severity\": \"severe\",\n    \"description\": \"Hipercolesterolemia familiar severa com manifestações cardiovasculares precoces\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/patients/{{patient_id}}/phenotypes/{{phenotype_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["patients", "{{patient_id}}", "phenotypes", "{{phenotype_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Integration Tests",
+      "item": [
+        {
+          "name": "Verify Gene-Phenotype Association",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Gene-phenotype association is correct', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('gene_phenotype_association');",
+                  "    ",
+                  "    const association = responseJson.gene_phenotype_association;",
+                  "    pm.expect(association).to.have.property('gene', 'LDLR');",
+                  "    pm.expect(association.phenotypes).to.include('HP:0003124');",
+                  "    pm.expect(association).to.have.property('variant');",
+                  "});",
+                  "",
+                  "pm.test('Patient has complete genomic profile', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.genome).to.not.be.null;",
+                  "    pm.expect(responseJson.phenotypes).to.be.an('array');",
+                  "    pm.expect(responseJson.phenotypes.length).to.be.above(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/patients/{{patient_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["patients", "{{patient_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
