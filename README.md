@@ -89,3 +89,10 @@ robot tests/robot/                   # Testes BDD
 ### Testes E2E Cypress
 
 <img width="1330" height="462" alt="EXECUTANDO TESTES E2E Cypress" src="https://github.com/user-attachments/assets/e55f7bd9-d6c0-49c1-95b5-fbfbc3bc8130" />
+
+### Métricas de Qualidade
+
+- Cobertura de código: ≥ 80%
+- Resposta média da API: < 200ms
+- Testes automatizados e rastreáveis
+- Interface com validações em tempo real
